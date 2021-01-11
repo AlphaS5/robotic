@@ -1,0 +1,26 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Unit 03 -->
+<!-- Launch file for robo_Dr3 using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+
+
+<!-- start rviz node -->
+	<node pkg="rviz" type="rviz" name="viz">
+	</node>
+
+
+<!-- start robo_Dr3 node -->
+	<node pkg="unit_03" type="robo_Dr3" output="screen" name="Mystery_mover">
+	</node>
+
+
+
+</launch>
+

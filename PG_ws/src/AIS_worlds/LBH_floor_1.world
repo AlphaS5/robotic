@@ -1,0 +1,52 @@
+# 
+# LBH_floor_1.world
+# World description of floor 1 in Landesbehoerdenhaus LBH
+#
+# Tested for Ubuntu Precison, ROS Hydro, and Stage 4.1.1 
+#
+# authors: Torsten Fiolka, 2010 
+# authors: Lukas Gesing, 2014
+# authors: Nils Goerke
+#
+# Lab Course and Projektgruppe Multi Robotik 
+#
+
+include "irobot.inc"
+include "map.inc"
+include "sick.inc"
+
+interval_sim 100
+interval_real 100
+
+resolution 0.05
+
+#speedup 2.0				# run as fast as possible
+#threads 2				# one thread per cpu-core
+
+floorplan 
+(
+  name "LBH_floor_1"
+  size [84.700 109.900 1.000]
+  bitmap "LBH_floor_1.ppm"
+  #bitmap "test.ppm"
+)
+
+window
+(
+  size [ 640 480 ] # in pixels
+  scale 48.718                 # 43.923 pixels per meter
+  show_data 1              # 1=on 0=off
+  center [ 33.122 -48.087 ]
+  #center [ 0.0 0.0 ]
+)
+
+roomba
+(
+  # can refer to the robot by this name
+  name "roomba0"
+  pose [33.700 -48.866 0.000 26.975]
+  #pose [0.0 0.0 0 90]
+
+  fancysicklaser( pose [0.090 0.000 0.000 0.000] ) 
+
+)

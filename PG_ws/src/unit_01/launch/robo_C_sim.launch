@@ -1,0 +1,17 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Unit 01 -->
+<!-- Launch file for robo_C using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/LBH_floor_1.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+<!-- start robo_C node -->
+	<node pkg="unit_01" type="robo_C" output="screen" name="Random_mover">
+	</node>
+
+</launch>
+

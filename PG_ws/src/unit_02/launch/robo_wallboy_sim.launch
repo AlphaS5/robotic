@@ -1,0 +1,17 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Unit 02 -->
+<!-- Launch file for robo_wallboy using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+<!-- start robo_wallboy node -->
+	<node pkg="unit_02" type="robo_wallboy" output="screen" name="testing_it_all">
+	</node>
+
+</launch>
+

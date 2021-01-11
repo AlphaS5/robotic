@@ -1,0 +1,24 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Launch file using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/LBH_floor_1.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+	
+<!-- start map server -->
+	<node pkg="map_server" type="map_server" name="map_server" args="$(find AIS_worlds)/LBH_floor_1.yaml">
+	</node>
+
+<!-- start transform node -->
+	<node pkg="tf" type="static_transform_publisher" name="transf" args="33.7 -49.4 0 1.57 0 0 /map /odom 1000">
+	</node>
+
+
+<!-- start robo_3_0 node -->
+	<node pkg="experiment_03" type="robo_3_0" output="screen" name="guess_what">
+	</node>
+
+</launch>

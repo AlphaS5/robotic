@@ -1,0 +1,105 @@
+//
+//
+// experiment_01
+// robo_04
+//
+// A simple robot control named: Guess_what
+//
+// Author: University of Bonn, Autonomous Intelligent Systems
+//
+
+// Includes to talk with ROS and all the other nodes
+#include <ros/ros.h>
+#include <geometry_msgs/Twist.h>
+#include <sensor_msgs/LaserScan.h>
+#include <sensor_msgs/Joy.h>
+
+// Class definition
+class Guess_what {
+public:
+	Guess_what();
+	void laserCallback(const sensor_msgs::LaserScanConstPtr& m_scan_data);
+	void emergencyStop();
+	void calculateCommand();
+	void mainLoop();
+
+protected:
+
+	void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
+	// Nodehandle for Guess_what robot
+	ros::NodeHandle m_nodeHandle;
+	
+	int linear_, angular_;
+  	double l_scale_, a_scale_;
+  	ros::Publisher vel_pub_;
+  	ros::Subscriber joy_sub_;
+
+	// Subscriber and membervariables for our laserscanner
+	ros::Subscriber m_laserSubscriber;
+	sensor_msgs::LaserScan m_laserscan;
+
+	// Publisher and membervariables for the driving commands
+	ros::Publisher m_commandPublisher;
+	geometry_msgs::Twist m_roombaCommand;
+
+};
+
+// constructor
+Guess_what::Guess_what() {
+	// Node will be instantiated in root-namespace
+	ros::NodeHandle m_nodeHandle("/");
+
+	// Initialising the node handle
+	m_laserSubscriber  = m_nodeHandle.subscribe<sensor_msgs::LaserScan>("laserscan", 20, &Guess_what::laserCallback, this);
+	m_commandPublisher = m_nodeHandle.advertise<geometry_msgs::Twist> ("cmd_vel", 20);
+
+}// end of Guess_what constructor
+
+
+
+// callback for getting laser values 
+void Guess_what::laserCallback(const sensor_msgs::LaserScanConstPtr& scanData) {
+    linear_(1),
+  angular_(2)
+{
+
+  m_nodeHandle.param("axis_linear", linear_, linear_);
+  m_nodeHandle.param("axis_angular", angular_, angular_);
+  m_nodeHandle.param("scale_angular", a_scale_, a_scale_);
+  m_nodeHandle.param("scale_linear", l_scale_, l_scale_);
+
+
+   vel_pub_ = m_nodeHandle.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 1);
+
+
+  joy_sub_ = m_nodeHandle.subscribe<sensor_msgs::Joy>("joy", 10, &TeleopTurtle::joyCallback, this);
+
+}// end of laserCallback
+
+void TeleopTurtle::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
+{
+ geometry_msgs::Twist twist;
+ twist.linear.x = l_scale_*joy->axes[linear_];
+ twist.angular.z = a_scale_*joy->axes[angular_];
+ vel_pub_.publish(twist);
+}
+
+
+
+
+int main(int argc, char** argv) {
+
+	// initialize
+	ros::init(argc, argv, "Guess_what");
+
+	// get an object of type Guess_what and call it dude 
+	Guess_what dude  ;
+
+	ros::spin();
+
+	return 0;
+
+}// end of main
+
+// end of file: robo_04.cpp
+

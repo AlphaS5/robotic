@@ -1,0 +1,17 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Unit 01 -->
+<!-- Launch file for robo_D in using the stage simulation with prakt_01  part of floor EG in IZ -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+<!-- start robo_D node -->
+	<node pkg="unit_01" type="robo_D" output="screen" name="Mystery_mover">
+	</node>
+
+</launch>
+

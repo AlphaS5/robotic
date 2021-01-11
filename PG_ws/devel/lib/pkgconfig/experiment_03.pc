@@ -1,0 +1,8 @@
+prefix=/home/sam/ros_world/PG_ws/devel
+
+Name: experiment_03
+Description: Description of experiment_03
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

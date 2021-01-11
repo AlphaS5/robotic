@@ -1,0 +1,49 @@
+# 
+# World description of part of floor 0 in IZ
+#
+# Tested for Ubuntu Precison, ROS Hydro, and Stage 4.1.1 
+#
+# authors: Torsten Fiolka, 2010 
+# authors: Lukas Gesing, 2014
+# authors: Nils Goerke
+# authors: Dieter Klemm, 08/2018
+#
+# Lab Course and Projektgruppe Multi Robotik 
+#
+
+include "irobot.inc"
+include "map.inc"
+include "sick.inc"
+
+interval_sim 100
+interval_real 100
+
+#speedup 2.0			# run as fast as possible
+#threads 2				# one thread per cpu-core
+
+floorplan 
+(
+  name "EG"
+  bitmap "prakt_01.png"
+  size [100.050 100.000 1.000]    # 100mx100m due to 2001x2000 pixel resolution 0.05
+  
+)
+
+window
+(
+  size [ 800 600 ]         # in pixels
+  scale 42
+  show_data 1               # 1=on 0=off
+  center [ 1.0 -10.0]
+ 
+)
+
+roomba
+(
+  # can refer to the robot by this name
+  name "roomba0"
+  pose [0.5 -12.00 0.000 50.0] #Original
+
+  fancysicklaser( pose [0.090 0.000 0.000 0.000] ) 
+
+)

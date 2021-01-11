@@ -1,0 +1,21 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Unit 03 -->
+<!-- Launch file for bob_ros using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+<!-- start map server -->
+	<node pkg="map_server" type="map_server" name="map_server" args="$(find AIS_worlds)/prakt_01.yaml">
+	</node>
+
+<!-- start robo_Dr3 node -->
+	<node pkg="unit_03" type="bob_ros" output="screen" name="Mystery_mover">
+	</node>
+
+</launch>
+

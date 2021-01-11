@@ -1,0 +1,8 @@
+prefix=/home/sam/ros_world/PG_ws/devel
+
+Name: unit_01
+Description: Description of unit_01
+Version: 0.0.1
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

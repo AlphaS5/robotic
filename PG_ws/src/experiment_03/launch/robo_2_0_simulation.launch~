@@ -1,0 +1,15 @@
+<launch>
+
+<!-- University of Bonn, Department of Computer Science VI,  LAB mobile robots -->
+<!-- Launch file using the stage simulation -->
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/LBH_floor_1.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>
+
+<!-- start robo_02 node -->
+	<node pkg="experiment_02" type="robo_2_0" output="screen" name="Just_move">
+	</node>
+
+</launch>
