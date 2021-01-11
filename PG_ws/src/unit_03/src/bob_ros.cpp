@@ -122,18 +122,18 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 	pose_estimate.theta = theta;
 
 }
-/*
+
 void bob_ros::handleNavigationNode(const geometry_msgs::Pose2D navigation_node) {
 	navigation_node_queue.push(navigation_node);
 
 	ROS_INFO("Queued navigation node { .x = %f, .y = %f, .theta = %f }", navigation_node.x, navigation_node.y, navigation_node.theta);
 }
-// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics */
+// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
 
 void bob_ros::dest_input(){
 	//knoten auswahlen...
 	int start_knoten = 0;
-	int ziel_knoten = 20;
+	int ziel_knoten = 35;
 	//	int [] = dikstra(start_knoten, ziel_knoten);
 	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
 	int path_size = path.size();
@@ -159,7 +159,16 @@ void bob_ros::emergencyStop() {
 			if( m_laserscan.ranges[i] <= 0.20) {
 				m_roombaCommand.linear.x = 0.0;
 				m_roombaCommand.angular.z = 0.0;
+				if (!navigation_node_queue.empty()){
+						m_roombaCommand.linear.x = 0.0;
+						m_roombaCommand.angular.z = 1.5;
+						// work on this later to make it not stop at walls or corners
+						// if the next position is " behind it " 
+
+						return;
+					}
 			}// end of if too close
+
 		}// end of for all laser beams
 	} // end of if we have laser data
 }// end of emergencyStop
