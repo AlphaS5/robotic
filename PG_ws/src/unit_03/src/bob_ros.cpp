@@ -64,10 +64,6 @@ protected:
 
 
 	double counter = 0;
-	int linear_, angular_;
-  double l_scale_, a_scale_;
-  double fotoclick;
- 	ros::Subscriber joy_sub_;
 
 };
 
@@ -82,30 +78,12 @@ bob_ros::bob_ros() {
 
 	navigation_node_subscriber = m_nodeHandle.subscribe<geometry_msgs::Pose2D>("navigation_node", 20, &bob_ros::handleNavigationNode, this);
 
-
-/*	//Joy
-	m_nodeHandle.param("axis_linear", linear_, linear_);
-  	m_nodeHandle.param("axis_angular", angular_, angular_);
-  	m_nodeHandle.param("scale_angular", a_scale_, a_scale_);
-  	m_nodeHandle.param("scale_linear", l_scale_, l_scale_);
-	joy_sub_ = m_nodeHandle.subscribe<sensor_msgs::Joy>("joy", 10, &bob_ros::joyCallback, this);
-	*/
 	//AMCL
 	m_amclSubscriber = m_nodeHandle.subscribe<geometry_msgs::PoseWithCovarianceStamped> ("amcl_pose", 20, &bob_ros::amclCallback,this);
 
 
 }// end of bob_ros constructor
 
-/*void bob_ros::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
-{
- m_roombaCommand.linear.x  = l_scale_*joy->buttons[1];
- m_roombaCommand.angular.z = a_scale_*joy->axes[0];
- fotoclick = joy->buttons[2];
- if (fotoclick == 1) {
- m_roombaCommand.linear.x  = l_scale_*(-1);
- }
-}
-*/
 
 // callback for getting laser values
 void bob_ros::laserCallback(const sensor_msgs::LaserScanConstPtr& scanData) {
@@ -144,20 +122,19 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 	pose_estimate.theta = theta;
 
 }
-
+/*
 void bob_ros::handleNavigationNode(const geometry_msgs::Pose2D navigation_node) {
 	navigation_node_queue.push(navigation_node);
 
 	ROS_INFO("Queued navigation node { .x = %f, .y = %f, .theta = %f }", navigation_node.x, navigation_node.y, navigation_node.theta);
 }
-// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
-
+// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics */
 
 void bob_ros::dest_input(){
 	//knoten auswahlen...
 	int start_knoten = 0;
-	int ziel_knoten = 3;
-//	int [] = dikstra(start_knoten, ziel_knoten);
+	int ziel_knoten = 20;
+	//	int [] = dikstra(start_knoten, ziel_knoten);
 	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
 	int path_size = path.size();
 
@@ -173,10 +150,7 @@ void bob_ros::dest_input(){
 
 }
 
-
-
 void bob_ros::emergencyStop() {
-
         // see if we have laser data
  	if( (&m_laserscan)->ranges.size() > 0)
 	{
@@ -203,14 +177,14 @@ void bob_ros::calculateCommand() {
 
 	const geometry_msgs::Pose2D dest = navigation_node_queue.front();
 
-	const float epsilon = 0.10;
+	const float factor = 0.10;
 	const float d_x = fabs(dest.x - pose_estimate.x);
 	const float d_y = fabs(dest.y - pose_estimate.y);
-	const float epsilon_angle = (10.0 / 360) * 2 * M_PI;
+	const float factor_angle = (10.0 / 360) * 2 * M_PI;
 
-	if (d_x < epsilon && d_y < epsilon) {
-		ROS_INFO("Reched dest: .{.x = %f, .y = %f, .theta = %f }", dest.x, dest.y, dest.theta);
-		ROS_INFO("Actual coordinates dest: .{.x = %f, .y = %f, .theta = %f }", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
+	if (d_x < factor && d_y < factor) {
+		ROS_INFO("REACHED DESTINATION: 	.{.x = %f, .y = %f, .theta = %f }", dest.x, dest.y, dest.theta);
+		ROS_INFO("ACTUAL COORDINATES: 	.{.x = %f, .y = %f, .theta = %f }", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
 		navigation_node_queue.pop();
 	}
 
@@ -252,11 +226,11 @@ void bob_ros::mainLoop() {
 	// terminate if the node get a kill signal
 	while (m_nodeHandle.ok())
 	{
+
 		if (counter == 0) {
 			dest_input();
 			counter = 1;
 		}
-
 
 		calculateCommand();
 		emergencyStop();
@@ -267,6 +241,7 @@ void bob_ros::mainLoop() {
 		m_commandPublisher.publish(m_roombaCommand);
 		ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
 		// spinOnce, just make the loop happen once
+
 		ros::spinOnce();
 		// and sleep, to be aligned with the 50ms loop rate
 		loop_rate.sleep();
