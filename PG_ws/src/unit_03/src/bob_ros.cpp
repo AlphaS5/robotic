@@ -1,6 +1,4 @@
-// experiment_01
-// robo_04
-// A simple robot control named: bob_ros
+// A simple robot named: bob_ros
 // Author: University of Bonn, Autonomous Intelligent Systems
 //
 // Includes to talk with ROS and all the other nodes
@@ -65,9 +63,6 @@ protected:
 	geometry_msgs::Pose2D *current_navigation_node;
 
 
-	double xpos;
-	double ypos;
-	double yaw;
 	double counter = 0;
 	int linear_, angular_;
   double l_scale_, a_scale_;
@@ -257,7 +252,12 @@ void bob_ros::mainLoop() {
 	// terminate if the node get a kill signal
 	while (m_nodeHandle.ok())
 	{
-		dest_input();
+		if (counter == 0) {
+			dest_input();
+			counter = 1;
+		}
+
+
 		calculateCommand();
 		emergencyStop();
 
@@ -265,7 +265,7 @@ void bob_ros::mainLoop() {
 
 		// send the command to the roomrider for execution
 		m_commandPublisher.publish(m_roombaCommand);
-		ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, yaw);
+		ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
 		// spinOnce, just make the loop happen once
 		ros::spinOnce();
 		// and sleep, to be aligned with the 50ms loop rate
