@@ -3,24 +3,25 @@
 //
 // Includes to talk with ROS and all the other nodes
 #include <ros/ros.h>
-#include <geometry_msgs/Twist.h>
+#include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/Joy.h>
-#include <geometry_msgs/PoseWithCovarianceStamped.h>
-#include <tf/transform_datatypes.h>
-#include <geometry_msgs/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
-#include <math.h>
+#include <tf/transform_datatypes.h>
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/Twist.h>
 #include <algorithm>
+#include <bits/stdc++.h>
+#include <math.h>
 #include <cmath>
 #include <chrono>
 #include <queue>
-#include <geometry_msgs/Pose2D.h>
-#include <sensor_msgs/image_encodings.h>
-#include "dikstra.h"
-#include <bits/stdc++.h>
 #include <list>
+#include "dikstra.h"
 #include "knoten.cpp"
+#include "robo_wall.h"
 
 
 // Class definition
@@ -31,11 +32,12 @@ public:
 	void emergencyStop();
 	void calculateCommand();
 	void mainLoop();
+	void avoid_obstical();
 
 	void laserCallback(const sensor_msgs::LaserScanConstPtr& m_scan_data);
 	void amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose);
 	void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
-	void handleNavigationNode(const geometry_msgs::Pose2D);
+	//void handleNavigationNode(const geometry_msgs::Pose2D);
 
 
 protected:
@@ -75,15 +77,10 @@ bob_ros::bob_ros() {
 	// Initialising the node handle
 	m_laserSubscriber  = m_nodeHandle.subscribe<sensor_msgs::LaserScan>("laserscan", 20, &bob_ros::laserCallback, this);
 	m_commandPublisher = m_nodeHandle.advertise<geometry_msgs::Twist> ("cmd_vel", 20);
-
-	navigation_node_subscriber = m_nodeHandle.subscribe<geometry_msgs::Pose2D>("navigation_node", 20, &bob_ros::handleNavigationNode, this);
-
 	//AMCL
 	m_amclSubscriber = m_nodeHandle.subscribe<geometry_msgs::PoseWithCovarianceStamped> ("amcl_pose", 20, &bob_ros::amclCallback,this);
-
-
+	//navigation_node_subscriber = m_nodeHandle.subscribe<geometry_msgs::Pose2D>("navigation_node", 20, &bob_ros::handleNavigationNode, this);
 }// end of bob_ros constructor
-
 
 // callback for getting laser values
 void bob_ros::laserCallback(const sensor_msgs::LaserScanConstPtr& scanData) {
@@ -91,7 +88,6 @@ void bob_ros::laserCallback(const sensor_msgs::LaserScanConstPtr& scanData) {
 	if(	(&m_laserscan)->ranges.size() < scanData->ranges.size()	){
 		m_laserscan.ranges.resize(	(size_t)scanData->ranges.size()	);
     	}
-
 	for(unsigned int i = 0; i < scanData->ranges.size(); i++){
 		m_laserscan.ranges[i] = scanData->ranges[i];
 	}
@@ -104,7 +100,7 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 	float	x = amcl_pose.pose.pose.position.x;
 	float y = amcl_pose.pose.pose.position.y;
 	//ausrichtung = amcl_pose->pose.pose.orientation
-	//	yaw = tf::getYaw(amcl_pose->pose.pose.orientation);
+	//yaw = tf::getYaw(amcl_pose->pose.pose.orientation);
 	//tf2::Matrix3x3(amcl_pose.pose.pose.orientation).getRPY(roll, pitch, yaw);
 
 	const geometry_msgs::Quaternion _q = amcl_pose.pose.pose.orientation;
@@ -114,30 +110,26 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 	double pitch;
 	double yaw;
 	m.getRPY(roll, pitch, yaw);
-
 	const float theta = yaw;
-
 	pose_estimate.x = x;
 	pose_estimate.y = y;
 	pose_estimate.theta = theta;
 
 }
 
-void bob_ros::handleNavigationNode(const geometry_msgs::Pose2D navigation_node) {
+/*void bob_ros::handleNavigationNode(const geometry_msgs::Pose2D navigation_node) {
 	navigation_node_queue.push(navigation_node);
 
 	ROS_INFO("Queued navigation node { .x = %f, .y = %f, .theta = %f }", navigation_node.x, navigation_node.y, navigation_node.theta);
-}
-// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
+} // http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics		*/
 
 void bob_ros::dest_input(){
 	//knoten auswahlen...
-	int start_knoten = 0;
-	int ziel_knoten = 35;
-	//	int [] = dikstra(start_knoten, ziel_knoten);
+	int start_knoten = 33;
+	int ziel_knoten = 41;
+
 	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
 	int path_size = path.size();
-
 	for(int i=0; i<path_size;	i++){
 		int element = path.front();
 		path.pop_front();
@@ -159,20 +151,27 @@ void bob_ros::emergencyStop() {
 			if( m_laserscan.ranges[i] <= 0.20) {
 				m_roombaCommand.linear.x = 0.0;
 				m_roombaCommand.angular.z = 0.0;
-				if (!navigation_node_queue.empty()){
-						m_roombaCommand.linear.x = 0.0;
-						m_roombaCommand.angular.z = 1.5;
-						// work on this later to make it not stop at walls or corners
-						// if the next position is " behind it " 
-
-						return;
-					}
-			}// end of if too close
-
-		}// end of for all laser beams
-	} // end of if we have laser data
+				return;
+			}
+		}//end of for loop
+	}// end of if
 }// end of emergencyStop
 
+
+void bob_ros::avoid_obstical()	{
+	if( (&m_laserscan)->ranges.size() > 0)
+	{
+		for(int i=0; i < (&m_laserscan)->ranges.size(); i++)	{
+			if(!navigation_node_queue.empty()){
+				//m_roombaCommand.linear.x = 0.0;
+				//m_roombaCommand.angular.z = 1.5;
+				wallmoves();
+				// work on this later to make it not stop at walls or corners
+				// if the next position is " behind it "
+			}
+		}
+	}
+}
 
 // here we go
 // this is the place where we will generate the commands for the robot
@@ -241,8 +240,9 @@ void bob_ros::mainLoop() {
 			counter = 1;
 		}
 
-		calculateCommand();
 		emergencyStop();
+		avoid_obstical();
+		calculateCommand();
 
 		//ROS_INFO(" robot_04 dude runs with: .x=%+6.2f[m/s], .z=%+6.2f[rad/s]", m_roombaCommand.linear.x, m_roombaCommand.angular.z);
 

@@ -320,6 +320,33 @@ src/robo_Dr3.cpp.s:
 	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/robo_Dr3.dir/build.make unit_03/CMakeFiles/robo_Dr3.dir/src/robo_Dr3.cpp.s
 .PHONY : src/robo_Dr3.cpp.s
 
+src/robo_wall.o: src/robo_wall.cpp.o
+
+.PHONY : src/robo_wall.o
+
+# target to build an object file
+src/robo_wall.cpp.o:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/robo_wall.cpp.o
+.PHONY : src/robo_wall.cpp.o
+
+src/robo_wall.i: src/robo_wall.cpp.i
+
+.PHONY : src/robo_wall.i
+
+# target to preprocess a source file
+src/robo_wall.cpp.i:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/robo_wall.cpp.i
+.PHONY : src/robo_wall.cpp.i
+
+src/robo_wall.s: src/robo_wall.cpp.s
+
+.PHONY : src/robo_wall.s
+
+# target to generate assembly for a file
+src/robo_wall.cpp.s:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/robo_wall.cpp.s
+.PHONY : src/robo_wall.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -348,6 +375,9 @@ help:
 	@echo "... src/robo_Dr3.o"
 	@echo "... src/robo_Dr3.i"
 	@echo "... src/robo_Dr3.s"
+	@echo "... src/robo_wall.o"
+	@echo "... src/robo_wall.i"
+	@echo "... src/robo_wall.s"
 .PHONY : help
 
 

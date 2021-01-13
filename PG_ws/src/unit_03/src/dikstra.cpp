@@ -134,8 +134,8 @@ list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
     adjacency_list[29].push_back(neighbor(25, 1));
     adjacency_list[25].push_back(neighbor(29, 1));
     adjacency_list[29].push_back(neighbor(30, 1));
-    adjacency_list[30].push_back(neighbor(37, 1));
-    adjacency_list[37].push_back(neighbor(30, 1));
+    adjacency_list[30].push_back(neighbor(40, 1));
+    adjacency_list[40].push_back(neighbor(30, 1));
     adjacency_list[30].push_back(neighbor(31, 1));
     adjacency_list[31].push_back(neighbor(32, 1));
     adjacency_list[32].push_back(neighbor(33, 1));
