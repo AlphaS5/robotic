@@ -37,6 +37,20 @@ stdio.h
 -
 iostream
 -
+ros/ros.h
+-
+geometry_msgs/Twist.h
+-
+sensor_msgs/LaserScan.h
+-
+iostream
+-
+algorithm
+-
+math.h
+-
+robo_wall.h
+/home/sam/ros_world/PG_ws/src/unit_03/src/robo_wall.h
 
 /home/sam/ros_world/PG_ws/src/unit_03/src/robo_wall.cpp
 ros/ros.h
@@ -66,6 +80,8 @@ iostream
 algorithm
 -
 math.h
+-
+array
 -
 
 /opt/ros/melodic/include/geometry_msgs/Twist.h

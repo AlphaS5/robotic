@@ -65,6 +65,7 @@ protected:
 	geometry_msgs::Pose2D *current_navigation_node;
 
 
+	double older_X = 0;
 	double counter = 0;
 
 };
@@ -125,7 +126,7 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 
 void bob_ros::dest_input(){
 	//knoten auswahlen...
-	int start_knoten = 33;
+	int start_knoten = 30;
 	int ziel_knoten = 41;
 
 	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
@@ -159,18 +160,18 @@ void bob_ros::emergencyStop() {
 
 
 void bob_ros::avoid_obstical()	{
-	if( (&m_laserscan)->ranges.size() > 0)
-	{
-		for(int i=0; i < (&m_laserscan)->ranges.size(); i++)	{
-			if(!navigation_node_queue.empty()){
-				//m_roombaCommand.linear.x = 0.0;
-				//m_roombaCommand.angular.z = 1.5;
-				wallmoves();
-				// work on this later to make it not stop at walls or corners
-				// if the next position is " behind it "
-			}
+	if(!navigation_node_queue.empty())	{
+		/*
+			float* move;
+			move = followwall(m_laserscan, move);
+			m_roombaCommand.linear.x = move[0];
+			//float one= 1;
+			//float two =*(move +1 );
+			m_roombaCommand.angular.z = move[1];//	*(move +one );
+			return;
+			*/
+			followwall(m_roombaCommand, m_laserscan);
 		}
-	}
 }
 
 // here we go
@@ -216,7 +217,7 @@ void bob_ros::calculateCommand() {
 
 	m_roombaCommand.angular.z = 0.2 * tanh(d_theta* 10);
 	// Only turn when we are in 45deg range of the destination direction
-	m_roombaCommand.linear.x = 0.1 * tanh(10 * (pow(diff_x, 2) + pow(diff_y, 2))) * (fabs(d_theta) < M_PI / 4.0);
+	m_roombaCommand.linear.x = 0.2 * tanh(10 * (pow(diff_x, 2) + pow(diff_y, 2))) * (fabs(d_theta) < M_PI / 4.0);
 
 
 } // end of calculateCommands
@@ -239,16 +240,19 @@ void bob_ros::mainLoop() {
 			dest_input();
 			counter = 1;
 		}
-
+		emergencyStop();
+		calculateCommand();
 		emergencyStop();
 		avoid_obstical();
-		calculateCommand();
-
+		emergencyStop();
 		//ROS_INFO(" robot_04 dude runs with: .x=%+6.2f[m/s], .z=%+6.2f[rad/s]", m_roombaCommand.linear.x, m_roombaCommand.angular.z);
 
 		// send the command to the roomrider for execution
 		m_commandPublisher.publish(m_roombaCommand);
-		ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
+		if (pose_estimate.x != older_X) {
+			ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
+			older_X = pose_estimate.x;
+		}
 		// spinOnce, just make the loop happen once
 
 		ros::spinOnce();

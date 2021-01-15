@@ -57,15 +57,13 @@ void DijkstraComputePaths(vertex_t source,
             vertex_t v = neighbor_iter->target;
             weight_t weight = neighbor_iter->weight;
             weight_t distance_through_u = dist + weight;
-	    if (distance_through_u < min_distance[v]) {
-	        vertex_queue.erase(make_pair(min_distance[v], v));
+      	    if (distance_through_u < min_distance[v]) {
+      	        vertex_queue.erase(make_pair(min_distance[v], v));
 
-	        min_distance[v] = distance_through_u;
-	        previous[v] = u;
-	        vertex_queue.insert(make_pair(min_distance[v], v));
-
-	    }
-
+      	        min_distance[v] = distance_through_u;
+      	        previous[v] = u;
+      	        vertex_queue.insert(make_pair(min_distance[v], v));
+      	    }
         }
     }
 }
@@ -84,6 +82,8 @@ list<vertex_t> DijkstraGetShortestPathTo(
 list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
 
     adjacency_list_t adjacency_list(42);
+
+
     adjacency_list[0].push_back(neighbor(1, 1));
     adjacency_list[1].push_back(neighbor(2, 1));
     adjacency_list[2].push_back(neighbor(3, 1));
