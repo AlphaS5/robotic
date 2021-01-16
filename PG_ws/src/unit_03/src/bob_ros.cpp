@@ -19,9 +19,10 @@
 #include <chrono>
 #include <queue>
 #include <list>
-#include "dikstra.h"
+#include "dikstra.cpp"
 #include "knoten.cpp"
 #include "robo_wall.h"
+#include "Graph.cpp"
 
 
 // Class definition
@@ -126,13 +127,24 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 
 void bob_ros::dest_input(){
 	//knoten auswahlen...
-	int start_knoten = 30;
-	int ziel_knoten = 41;
+	int start_knoten = 31;
+	int ziel_knoten = 32;
 
 	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
+
 	int path_size = path.size();
+	//graph ourx = answer();
+	list<vertex_t> pathx = path;
+ int path_sizex = pathx.size();
+	for(int i=0; i<path_sizex;	i++){
+		int elementx = pathx.front();
+			ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", elementx);
+		pathx.pop_front();
+	}
+
 	for(int i=0; i<path_size;	i++){
 		int element = path.front();
+	//	ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", element);
 		path.pop_front();
 		geometry_msgs::Pose2D pose;
     pose.x = koordinaten[element][0];

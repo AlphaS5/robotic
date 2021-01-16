@@ -3,12 +3,13 @@
 #include <fstream>
 #include <math.h>
 #include "Graph.h"
+
+
 //Euklidischer Abstand Zweier Knoten
 double distance(int a, int b, double array[][2]){
   return sqrt((array[a][0]-array[b][0])*(array[a][0]-array[b][0])
   +(array[a][1]-array[b][1])*(array[a][1]-array[b][1]));
 }
-
 
 //Fill Arrays from txt files
 graph answer(){
@@ -17,13 +18,13 @@ graph answer(){
   int anzahl_knoten = 42;
   int anzahl_kanten = 72;
   //Array von Knotenkoordinaten (Knotennummer X Position)
-  double koordinaten[anzahl_knoten][2];
+  double knoten[anzahl_knoten][2];
   //Array von Kanten (Kantennummer X Kante A, Kante B, Distance)
   double kanten[anzahl_kanten][3];
  //Init Arrays with Zero
   for(int i=0; i<anzahl_knoten; i++){
-    koordinaten[i][0]=0;
-    koordinaten[i][1]=0;
+    knoten[i][0]=0;
+    knoten[i][1]=0;
   }
   for(int i=0; i<anzahl_kanten; i++){
     kanten[i][0]=0;
@@ -39,8 +40,8 @@ graph answer(){
       int a;
       double b, c;
       if (!(iss >> a >> b >> c)) { break; } // error
-      koordinaten[a][0]=b;
-      koordinaten[a][1]=c;
+      knoten[a][0]=b;
+      knoten[a][1]=c;
   }
 
   std::ifstream infile_kanten("kanten_prakt_01.txt");
@@ -52,12 +53,12 @@ graph answer(){
     if (!(iss >> a >> b >> c)) { break; } // error
     kanten[a][0]=b;
     kanten[a][1]=c;
-    kanten[a][2]=distance(b,c, koordinaten);
+    kanten[a][2]=distance(b,c, knoten);
   }
 
   for(int i=0; i<=41; i++){
     for(int j=0; j<=1; j++){
-       x.knotengraph[i][j] = koordinaten[i][j];
+       x.knotengraph[i][j] = knoten[i][j];
     }
   }
   for(int i=0; i<=71; i++){

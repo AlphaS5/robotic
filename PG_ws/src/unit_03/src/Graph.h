@@ -1,4 +1,5 @@
-
+#ifndef GRAPH_H
+#define GRAPH_H
 
 //Struct um 2 Arrays gleichzeitig zu returnen
 struct graph{
@@ -14,3 +15,7 @@ double knoten = x.knotengraph;
 */
 
 graph answer();
+
+
+
+#endif

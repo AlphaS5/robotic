@@ -212,6 +212,33 @@ dikstra/fast:
 	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/build
 .PHONY : dikstra/fast
 
+src/Graph.o: src/Graph.cpp.o
+
+.PHONY : src/Graph.o
+
+# target to build an object file
+src/Graph.cpp.o:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/Graph.cpp.o
+.PHONY : src/Graph.cpp.o
+
+src/Graph.i: src/Graph.cpp.i
+
+.PHONY : src/Graph.i
+
+# target to preprocess a source file
+src/Graph.cpp.i:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/Graph.cpp.i
+.PHONY : src/Graph.cpp.i
+
+src/Graph.s: src/Graph.cpp.s
+
+.PHONY : src/Graph.s
+
+# target to generate assembly for a file
+src/Graph.cpp.s:
+	cd /home/sam/ros_world/PG_ws/build && $(MAKE) -f unit_03/CMakeFiles/dikstra.dir/build.make unit_03/CMakeFiles/dikstra.dir/src/Graph.cpp.s
+.PHONY : src/Graph.cpp.s
+
 src/bob_ros.o: src/bob_ros.cpp.o
 
 .PHONY : src/bob_ros.o
@@ -363,6 +390,9 @@ help:
 	@echo "... install/local"
 	@echo "... dikstra"
 	@echo "... test"
+	@echo "... src/Graph.o"
+	@echo "... src/Graph.i"
+	@echo "... src/Graph.s"
 	@echo "... src/bob_ros.o"
 	@echo "... src/bob_ros.i"
 	@echo "... src/bob_ros.s"

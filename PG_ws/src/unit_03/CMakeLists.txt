@@ -134,6 +134,8 @@ add_library(dikstra
 	src/knoten.cpp
 	src/robo_wall.h
 	src/robo_wall.cpp
+	src/Graph.h
+	src/Graph.cpp
 )
 
 target_link_libraries(dikstra ${catkin_LIBRARIES})

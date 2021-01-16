@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <iterator>
 #include "dikstra.h"
+#include "Graph.h"
+#include <ros/ros.h>
 
 using namespace std;
 
@@ -81,9 +83,23 @@ list<vertex_t> DijkstraGetShortestPathTo(
 
 list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
 
-    adjacency_list_t adjacency_list(42);
+    adjacency_list_t adjacency_list(72);
 
+    graph ourx = answer();
 
+    double kanten[72][3];
+    for(int i=0; i<=71; i++){
+      for(int j=0; j<=2; j++){
+        kanten[i][j] = ourx.kantengraph[i][j];
+      }
+    }
+
+    for(int i = 0; i<=71; i++)  {
+      adjacency_list[kanten[i][0]].
+              push_back(neighbor(kanten[i][1], kanten[i][2]));
+    }
+
+/*
     adjacency_list[0].push_back(neighbor(1, 1));
     adjacency_list[1].push_back(neighbor(2, 1));
     adjacency_list[2].push_back(neighbor(3, 1));
@@ -156,7 +172,7 @@ list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
     adjacency_list[41].push_back(neighbor(30, 1));
     adjacency_list[30].push_back(neighbor(41, 1));
     adjacency_list[41].push_back(neighbor(2, 1));
-
+*/
 
     vector<weight_t> min_distance;
     vector<vertex_t> previous;
@@ -166,5 +182,13 @@ list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
     //std::cout << "Path : ";
     //copy(path.begin(), path.end(), std::ostream_iterator<vertex_t>(std::cout, " "));
     //std::cout << std::endl;
+                    list<vertex_t> pathx = path;
+                   int path_size = pathx.size();
+                    for(int i=0; i<path_size;	i++){
+                      int element = pathx.front();
+                      	ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", element);
+                      pathx.pop_front();
+                    }
+        
     return path;
 }
