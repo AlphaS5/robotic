@@ -4,10 +4,12 @@
 #include <math.h>
 //#include "Graph.h"
 #include "Graph.cpp"
+#include "dikstra.cpp"
+#include <list>
 
 int main(){
 
-  graph ourx = answer();
+  /*graph ourx = answer();
 
   double knoten[42][2];
   for(int i=0; i<=41; i++){
@@ -32,5 +34,19 @@ int main(){
     printf("%f , %f, %f \n", kanten[i][0], kanten[i][1], kanten[i][2]);
     }
     printf("Here we are now. Entertain us\n");
+*/
+
+    int start_knoten = 31;
+    int ziel_knoten = 41;
+
+    list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
+
+    list<vertex_t> pathx = path;
+   int path_size = pathx.size();
+    for(int i=0; i<path_size;	i++){
+      int element = pathx.front();
+        printf("	\n path %d	\n", element);
+      pathx.pop_front();
+    }
 return 0;
 }

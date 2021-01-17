@@ -81,7 +81,7 @@ list<vertex_t> DijkstraGetShortestPathTo(
 }
 
 
-list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
+list<vertex_t> dikstra_main( int start_knoten, int ziel_knoten){
 
     adjacency_list_t adjacency_list(72);
 
@@ -95,8 +95,10 @@ list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
     }
 
     for(int i = 0; i<=71; i++)  {
-      adjacency_list[kanten[i][0]].
-              push_back(neighbor(kanten[i][1], kanten[i][2]));
+
+      adjacency_list[kanten[i][0]].push_back(neighbor(kanten[i][1], kanten[i][2]));
+
+      //ROS_INFO("	\n\n\n path %f, %f	\n\n", kanten[i][0], adjacency_list[1]);
     }
 
 /*
@@ -182,13 +184,6 @@ list<vertex_t> dikstra_main(int start_knoten, int ziel_knoten){
     //std::cout << "Path : ";
     //copy(path.begin(), path.end(), std::ostream_iterator<vertex_t>(std::cout, " "));
     //std::cout << std::endl;
-                    list<vertex_t> pathx = path;
-                   int path_size = pathx.size();
-                    for(int i=0; i<path_size;	i++){
-                      int element = pathx.front();
-                      	ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", element);
-                      pathx.pop_front();
-                    }
-        
+
     return path;
 }

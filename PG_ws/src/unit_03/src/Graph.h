@@ -1,5 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
+// #pragma once
+
 
 //Struct um 2 Arrays gleichzeitig zu returnen
 struct graph{

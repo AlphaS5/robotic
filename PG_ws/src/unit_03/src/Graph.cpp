@@ -8,7 +8,7 @@
 //Euklidischer Abstand Zweier Knoten
 double distance(int a, int b, double array[][2]){
   return sqrt((array[a][0]-array[b][0])*(array[a][0]-array[b][0])
-  +(array[a][1]-array[b][1])*(array[a][1]-array[b][1]));
+          +(array[a][1]-array[b][1])*(array[a][1]-array[b][1]));
 }
 
 //Fill Arrays from txt files
@@ -31,7 +31,7 @@ graph answer(){
     kanten[i][1]=0;
     kanten[i][2]=0;
   }
-//Fill Array from txt file
+  //Fill Array from txt file
   std::ifstream infile_knoten("knoten_prakt_01.txt");
   std::string line_knoten;
   while (std::getline(infile_knoten, line_knoten))

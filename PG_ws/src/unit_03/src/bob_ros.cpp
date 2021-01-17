@@ -7,11 +7,15 @@
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/Joy.h>
 #include <tf2/LinearMath/Matrix3x3.h>
-#include <tf/transform_datatypes.h>
+
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/Twist.h>
+
+
+#include <std_msgs/Int16.h>
+
 #include <algorithm>
 #include <bits/stdc++.h>
 #include <math.h>
@@ -22,7 +26,9 @@
 #include "dikstra.cpp"
 #include "knoten.cpp"
 #include "robo_wall.h"
-#include "Graph.cpp"
+//#include "Graph.cpp"
+#include "Graph.h"
+#include <vector>
 
 
 // Class definition
@@ -38,7 +44,7 @@ public:
 	void laserCallback(const sensor_msgs::LaserScanConstPtr& m_scan_data);
 	void amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose);
 	void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
-	//void handleNavigationNode(const geometry_msgs::Pose2D);
+	void handleNavigationNode(std_msgs::Int16);
 
 
 protected:
@@ -81,7 +87,7 @@ bob_ros::bob_ros() {
 	m_commandPublisher = m_nodeHandle.advertise<geometry_msgs::Twist> ("cmd_vel", 20);
 	//AMCL
 	m_amclSubscriber = m_nodeHandle.subscribe<geometry_msgs::PoseWithCovarianceStamped> ("amcl_pose", 20, &bob_ros::amclCallback,this);
-	//navigation_node_subscriber = m_nodeHandle.subscribe<geometry_msgs::Pose2D>("navigation_node", 20, &bob_ros::handleNavigationNode, this);
+	navigation_node_subscriber = m_nodeHandle.subscribe<std_msgs::Int16>("navigation_node", 20, &bob_ros::handleNavigationNode, this);
 }// end of bob_ros constructor
 
 // callback for getting laser values
@@ -105,55 +111,66 @@ void bob_ros::amclCallback(const geometry_msgs::PoseWithCovarianceStamped pose) 
 	//yaw = tf::getYaw(amcl_pose->pose.pose.orientation);
 	//tf2::Matrix3x3(amcl_pose.pose.pose.orientation).getRPY(roll, pitch, yaw);
 
-	const geometry_msgs::Quaternion _q = amcl_pose.pose.pose.orientation;
-	const tf2::Quaternion q(_q.x, _q.y, _q.z, _q.w);
-	const tf2::Matrix3x3 m(q);
+	geometry_msgs::Quaternion _q = amcl_pose.pose.pose.orientation;
+	tf2::Quaternion q(_q.x, _q.y, _q.z, _q.w);
+	tf2::Matrix3x3 m(q);
 	double roll;
 	double pitch;
 	double yaw;
 	m.getRPY(roll, pitch, yaw);
-	const float theta = yaw;
+	float theta = yaw;
 	pose_estimate.x = x;
 	pose_estimate.y = y;
 	pose_estimate.theta = theta;
 
 }
 
-/*void bob_ros::handleNavigationNode(const geometry_msgs::Pose2D navigation_node) {
-	navigation_node_queue.push(navigation_node);
 
-	ROS_INFO("Queued navigation node { .x = %f, .y = %f, .theta = %f }", navigation_node.x, navigation_node.y, navigation_node.theta);
-} // http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics		*/
-
-void bob_ros::dest_input(){
+void bob_ros::dest_input()	{
 	//knoten auswahlen...
 	int start_knoten = 31;
-	int ziel_knoten = 32;
+	int ziel_knoten = 38;
+	// list of path zuruch von dijkstra bekommen
+	list<vertex_t> path = dikstra_main(	start_knoten,	ziel_knoten);
 
-	list<vertex_t> path = dikstra_main(start_knoten,ziel_knoten);
-
+	graph map = answer();
 	int path_size = path.size();
-	//graph ourx = answer();
-	list<vertex_t> pathx = path;
- int path_sizex = pathx.size();
-	for(int i=0; i<path_sizex;	i++){
-		int elementx = pathx.front();
-			ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", elementx);
-		pathx.pop_front();
-	}
-
 	for(int i=0; i<path_size;	i++){
 		int element = path.front();
-	//	ROS_INFO("	\n\n\n\n path %d	\n\n\n\n", element);
+		ROS_INFO("\n	path	%d	\n", element);
 		path.pop_front();
 		geometry_msgs::Pose2D pose;
-    pose.x = koordinaten[element][0];
-    pose.y = koordinaten[element][1];
+    pose.x = map.knotengraph[element][0];
+    pose.y = map.knotengraph[element][1];
     pose.theta = 0;
 		navigation_node_queue.push(pose);
 	}
 
 }
+// in terminal: rostopic pub /navigation_node std_msgs/Int16  'ziel' 
+void bob_ros::handleNavigationNode(std_msgs::Int16 ziel_knoten) {
+
+	int start_knoten = 0;
+	int ziel_knotenx = ziel_knoten.data;
+	list<vertex_t> path = dikstra_main(	start_knoten,	ziel_knotenx);
+
+	graph map = answer();
+	int path_size = path.size();
+	for(int i=0; i<path_size;	i++){
+		int element = path.front();
+		ROS_INFO("\n	path	%d	\n", element);
+		path.pop_front();
+		geometry_msgs::Pose2D pose;
+    pose.x = map.knotengraph[element][0];
+    pose.y = map.knotengraph[element][1];
+    pose.theta = 0;
+		navigation_node_queue.push(pose);
+	}
+
+	//ROS_INFO("Queued navigation node { .x = %f, .y = %f, .theta = %f }", navigation_node.x, navigation_node.y, navigation_node.theta);
+
+}
+// http://wiki.ros.org/ROS/Tutorials/UnderstandingTopics
 
 void bob_ros::emergencyStop() {
         // see if we have laser data
@@ -163,7 +180,7 @@ void bob_ros::emergencyStop() {
 		{
 			if( m_laserscan.ranges[i] <= 0.20) {
 				m_roombaCommand.linear.x = 0.0;
-				m_roombaCommand.angular.z = 0.0;
+
 				return;
 			}
 		}//end of for loop
@@ -190,52 +207,46 @@ void bob_ros::avoid_obstical()	{
 // this is the place where we will generate the commands for the robot
 void bob_ros::calculateCommand() {
 
-	if (navigation_node_queue.empty()){
+		if (navigation_node_queue.empty())	{
 			m_roombaCommand.linear.x = 0.0;
 			m_roombaCommand.angular.z = 0.0;
 			return;
 		}
 
-	const geometry_msgs::Pose2D dest = navigation_node_queue.front();
+	geometry_msgs::Pose2D dest = navigation_node_queue.front();
 
-	const float factor = 0.10;
-	const float d_x = fabs(dest.x - pose_estimate.x);
-	const float d_y = fabs(dest.y - pose_estimate.y);
-	const float factor_angle = (10.0 / 360) * 2 * M_PI;
+	float factor = 0.10;
+	float d_x = fabs(dest.x - pose_estimate.x);
+	float d_y = fabs(dest.y - pose_estimate.y);
 
 	if (d_x < factor && d_y < factor) {
-		ROS_INFO("REACHED DESTINATION: 	.{.x = %f, .y = %f, .theta = %f }", dest.x, dest.y, dest.theta);
-		ROS_INFO("ACTUAL COORDINATES: 	.{.x = %f, .y = %f, .theta = %f }", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
+		ROS_INFO("\n\nREACHED DESTINATION:	.x = %.3f, .y = %.3f, .theta = %.3f", dest.x, dest.y, dest.theta);
+		ROS_INFO("\n\nACTUAL COORDINATES: 	.x = %.3f, .y = %.3f, .theta = %.3f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
 		navigation_node_queue.pop();
+		geometry_msgs::Pose2D next_dest = navigation_node_queue.front();
+		ROS_INFO("\n\nNEXT DESTINATION:	.x = %.3f, .y = %.3f, .theta = %.3f\n\n", next_dest.x, next_dest.y, next_dest.theta);
 	}
 
-	m_roombaCommand.linear.x = 0.0;
-	m_roombaCommand.angular.z = 0.0;
-
 	// Do nothing when there is no destination
-	if (navigation_node_queue.empty()){
+	if (navigation_node_queue.empty())	{
 			m_roombaCommand.linear.x = 0.0;
 			m_roombaCommand.angular.z = 0.0;
 			return;
 		}
 
-	const geometry_msgs::Pose2D dest2 = navigation_node_queue.front();
+	geometry_msgs::Pose2D dest2 = navigation_node_queue.front();
 
-	const float diff_x = dest2.x - pose_estimate.x;
-	const float diff_y = dest2.y - pose_estimate.y;
+	float diff_x = dest2.x - pose_estimate.x;
+	float diff_y = dest2.y - pose_estimate.y;
+	float factor_angle = (10.0 / 360) * 2 * M_PI;
 
 	// The angle that directly leads to the destination pose
-	const float d_theta = atan2f(diff_y, diff_x) - pose_estimate.theta;
+	float d_theta = atan2f(diff_y, diff_x) - pose_estimate.theta;
 
 	m_roombaCommand.angular.z = 0.2 * tanh(d_theta* 10);
 	// Only turn when we are in 45deg range of the destination direction
-	m_roombaCommand.linear.x = 0.2 * tanh(10 * (pow(diff_x, 2) + pow(diff_y, 2))) * (fabs(d_theta) < M_PI / 4.0);
-
-
+	m_roombaCommand.linear.x = 0.2 * tanh(10 * (pow(diff_x, 2) + pow(diff_y, 2))) * (fabs(d_theta) < factor_angle);
 } // end of calculateCommands
-
-// robot shall stop, in case anything is closer than ...
-
 
 
 //
@@ -243,26 +254,28 @@ void bob_ros::mainLoop() {
 	// determines the number of loops per second
 	ros::Rate loop_rate(20);
 
+
+
 	// als long as all is O.K : run
 	// terminate if the node get a kill signal
 	while (m_nodeHandle.ok())
 	{
 
 		if (counter == 0) {
-			dest_input();
+		//	dest_input();
 			counter = 1;
 		}
-		emergencyStop();
+
 		calculateCommand();
+		//avoid_obstical();
 		emergencyStop();
-		avoid_obstical();
-		emergencyStop();
+
 		//ROS_INFO(" robot_04 dude runs with: .x=%+6.2f[m/s], .z=%+6.2f[rad/s]", m_roombaCommand.linear.x, m_roombaCommand.angular.z);
 
 		// send the command to the roomrider for execution
 		m_commandPublisher.publish(m_roombaCommand);
 		if (pose_estimate.x != older_X) {
-			ROS_INFO(" Xposition: %f - Yposition: %f Yaw: %f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
+			ROS_INFO(" Xposition: %.3f - Yposition: %.3f Yaw: %.3f", pose_estimate.x, pose_estimate.y, pose_estimate.theta);
 			older_X = pose_estimate.x;
 		}
 		// spinOnce, just make the loop happen once
@@ -275,14 +288,6 @@ void bob_ros::mainLoop() {
 
 
 int main(int argc, char** argv) {
-
-/*
-	fp = fopen("datei.txt" ,"wt");
-	...
-	...
-	fclose(fp);
-	fprintf(fp, "wert %d %lf\n", x, y);
-*/
 	// initialize
 	ros::init(argc, argv, "bob_ros");
 

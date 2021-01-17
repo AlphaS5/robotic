@@ -42,7 +42,7 @@ roomba
 (
   # can refer to the robot by this name
   name "roomba0"
-  pose [0.5 -12.00 0.000 50.0] #Original
+  pose [0.5 -12.00 0.000 25.0] #Original
 
   fancysicklaser( pose [0.090 0.000 0.000 0.000] ) 
 
