@@ -135,6 +135,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/sam/ros_world/PG_ws/build/unit_01/cmake_install.cmake")
   include("/home/sam/ros_world/PG_ws/build/unit_02/cmake_install.cmake")
   include("/home/sam/ros_world/PG_ws/build/unit_03/cmake_install.cmake")
+  include("/home/sam/ros_world/PG_ws/build/unit_05/cmake_install.cmake")
 
 endif()
 

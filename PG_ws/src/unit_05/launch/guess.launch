@@ -1,0 +1,20 @@
+<!-- University of Bonn, Department of Computer Science VI, Projektgruppe Mobile Robotik -->
+<!-- Launch file using the stage simulation -->
+
+<launch>
+<param name="/use_sim_time" value="true" />
+
+
+<!-- start stage node -->
+	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
+ <remap from="base_scan" to="laserscan"/>
+	</node>	
+
+
+<!-- start node -->
+	<node pkg="unit_05" type="guess_01" output="screen" name="GuessWhatIamDoing">
+	</node>
+
+
+
+</launch>
