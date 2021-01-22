@@ -147,7 +147,7 @@ void bob_ros::dest_input()	{
 	}
 
 }
-// in terminal: rostopic pub /navigation_node std_msgs/Int16  'ziel' 
+// in terminal: rostopic pub /navigation_node std_msgs/Int16  'ziel'
 void bob_ros::handleNavigationNode(std_msgs::Int16 ziel_knoten) {
 
 	int start_knoten = 0;

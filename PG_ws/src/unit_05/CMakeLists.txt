@@ -27,5 +27,8 @@ add_executable(guess_01 src/guess_01.cpp)
 target_link_libraries (guess_01 ${OpenCV_LIBS} ${catkin_LIBRARIES})
 
 
+add_executable(guess_02 src/guess_02.cpp)
+target_link_libraries (guess_02 ${OpenCV_LIBS} ${catkin_LIBRARIES})
+
 
 
