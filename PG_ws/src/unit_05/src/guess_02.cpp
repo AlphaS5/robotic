@@ -51,7 +51,7 @@ color_control::color_control()	{
 	//Knoten wird im root-Namespace angelegt
 
 	ros::NodeHandle m_nodeHandle("/");
-  ros::Subscriber sub = m_nodeHandle.subscribe("/cv_camera_node/image_raw", 1,  &color_control::ImageCallback, this);
+  ros::Subscriber sub = m_nodeHandle.subscribe("/cv_camera_node/image_raw", 20,  &color_control::ImageCallback, this);
 
 	m_commandPublisher = m_nodeHandle.advertise<geometry_msgs::Twist> ("cmd_vel", 20);
 }
@@ -118,7 +118,7 @@ void color_control::do_some_magic( sensor_msgs::Image* img, int red, int green, 
     center.x = S_x;
     center.y = S_y;
     cvCircle( img, center, radius, CV_RGB( 255 - red, 255 - green, 255 - blue ) , 3, 8, 0 );
-    cvShowImage( "result", img );
+  //  cvShowImage( "result", img );
 }
 
 
@@ -127,8 +127,8 @@ void color_control::mainLoop() {
 	ros::Rate loop_rate(20);
 
 //	CvCapture* capture = 0;
-	const int CAMERA_INDEX = 0;
-  cv::VideoCapture capture(CAMERA_INDEX);
+	//const int CAMERA_INDEX = 0;
+  //cv::VideoCapture capture(CAMERA_INDEX);
 //	cv_camera::Capture capture;//= cv_camera::Capture::capture();
 	//bool shot = cv_camera::Capture::capture();
 
@@ -145,7 +145,7 @@ void color_control::mainLoop() {
 		     // cv_camera::Capture::publish();
 
 
-        do_some_magic(frame , 100, 120, 240, 100);
+    do_some_magic(frame , 100, 120, 240, 100);
 
 
 		 ROS_INFO( "C_C: %d", C_C );
