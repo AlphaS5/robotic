@@ -52,3 +52,15 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/unit_05" TYPE FILE FILES "/home/sam/ros_world/PG_ws/src/unit_05/package.xml")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/unit_05" TYPE PROGRAM FILES "/home/sam/ros_world/PG_ws/build/unit_05/catkin_generated/installspace/guess_03.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/unit_05" TYPE PROGRAM FILES "/home/sam/ros_world/PG_ws/build/unit_05/catkin_generated/installspace/image_converter.py")
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/unit_05" TYPE PROGRAM FILES "/home/sam/ros_world/PG_ws/build/unit_05/catkin_generated/installspace/emil.py")
+endif()
+

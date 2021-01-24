@@ -5,6 +5,10 @@
 <param name="/use_sim_time" value="true" />
 
 
+<!-- start node -->
+<node pkg="unit_05" type="guess_03.py" output="screen" name="guess_03">
+</node>
+
 <!-- start stage node -->
 	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
  <remap from="base_scan" to="laserscan"/>
@@ -17,10 +21,6 @@
 
 	<node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" respawn="false" output="screen">
 	<remap from="image" to="/cv_camera/image_raw" />
-	</node>
-
-<!-- start node -->
-	<node pkg="unit_05" type="guess_02" output="screen" name="GuessWhatIamDoing">
 	</node>
 
 

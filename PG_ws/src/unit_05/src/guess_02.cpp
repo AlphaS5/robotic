@@ -39,6 +39,7 @@ protected:
 void color_control::ImageCallback(const sensor_msgs::Image::ConstPtr &image)
 {
 	g_image = *image;
+	ROS_INFO("cameraCallback\n");
 }
 
 void color_control::InfoCallback(const sensor_msgs::CameraInfo::ConstPtr &info)
@@ -51,7 +52,7 @@ color_control::color_control()	{
 	//Knoten wird im root-Namespace angelegt
 
 	ros::NodeHandle m_nodeHandle("/");
-  ros::Subscriber sub = m_nodeHandle.subscribe("/cv_camera_node/image_raw", 20,  &color_control::ImageCallback, this);
+  ros::Subscriber sub = m_nodeHandle.subscribe<sensor_msgs::Image>("/cv_camera/image_raw", 20,  &color_control::ImageCallback, this);
 
 	m_commandPublisher = m_nodeHandle.advertise<geometry_msgs::Twist> ("cmd_vel", 20);
 }
@@ -69,23 +70,28 @@ double color_control::setSpeed( double center, double size ){
 
 void color_control::do_some_magic( sensor_msgs::Image* img, int red, int green, int blue, int tolerance) {
 
+		if(img->width == 0){
+			return;
+		}
     int radius = 20 ;
 
-		int channels = sensor_msgs::image_encodings::numChannels(img->encoding);
+		int channels = 3;// sensor_msgs::image_encodings::numChannels(img->encoding);
 
 
     int width = img->width;
+		ROS_INFO("width %d\n", width);
     int height = img->height;
+			ROS_INFO("height %d\n", height);
 		//int channels = encoding->numChannels;
   //  int channels = img->nChannels;
     int step = img->step;
 
-    unsigned char redP = 250, greenP = 0, blueP = 0;
+    unsigned char redP = 0, greenP = 0, blueP = 0;
     double S_x = 0.0 ;
     double S_y = 0.0 ;
     int red_difference, green_difference, blue_difference ;
 
-    C_C = 0 ;
+    C_C = 1 ;
 
     for(int y=0;y<height;y++) {
         for(int x=0;x<width;x++) {
@@ -117,7 +123,7 @@ void color_control::do_some_magic( sensor_msgs::Image* img, int red, int green, 
     CvPoint center;
     center.x = S_x;
     center.y = S_y;
-    cvCircle( img, center, radius, CV_RGB( 255 - red, 255 - green, 255 - blue ) , 3, 8, 0 );
+    //cvCircle( img, center, radius, CV_RGB( 255 - red, 255 - green, 255 - blue ) , 3, 8, 0 );
   //  cvShowImage( "result", img );
 }
 
@@ -126,17 +132,17 @@ void color_control::mainLoop() {
 	// Bestimmt die Anzahl der Schleifendurchläufe pro Sekunde
 	ros::Rate loop_rate(20);
 
-//	CvCapture* capture = 0;
+	//CvCapture* capture = 0;
 	//const int CAMERA_INDEX = 0;
   //cv::VideoCapture capture(CAMERA_INDEX);
 //	cv_camera::Capture capture;//= cv_camera::Capture::capture();
 	//bool shot = cv_camera::Capture::capture();
 
-//	sensor_msgs::Image *frame, *frame_copy = 0;
+	//	sensor_msgs::Image *frame = &g_image;
 
 	// Kamera 0 öffnen
 	//capture = cvCaptureFromCAM( 0 );
-	 sensor_msgs::Image *frame ; //= cv_camera::Capture::getImageMsgPtr();
+	 //sensor_msgs::Image *frame ; //= cv_camera::Capture::getImageMsgPtr();
 	//cvNamedWindow( "result", 1 );
 
 	// Schleife bricht ab, wenn der Knoten z.B. ein Kill bekommt
@@ -145,21 +151,21 @@ void color_control::mainLoop() {
 		     // cv_camera::Capture::publish();
 
 
-    do_some_magic(frame , 100, 120, 240, 100);
+   	 do_some_magic(&g_image , 100, 120, 240, 100);
 
 
-		 ROS_INFO( "C_C: %d", C_C );
+		 //ROS_INFO( "C_C: %d", C_C );
 
-		 if (C_C > 50)
-		  {
+		 //if (C_C > 50)
+		 // {
 			m_roombaCommand.linear.x = R_Y;
 			m_roombaCommand.angular.z = -R_X;
-		  } else {
-			m_roombaCommand.linear.x = 0.0;
-			m_roombaCommand.angular.z = 0.0;
-		  }
+		 // } else {
+		//	m_roombaCommand.linear.x = 0.0;
+		//	m_roombaCommand.angular.z = 0.0;
+		 // }
 
-		ROS_INFO(" Vorwaerts: %f - Drehung: %f", m_roombaCommand.linear.x, m_roombaCommand.angular.z);
+	//	ROS_INFO(" Vorwaerts: %f - Drehung: %f", m_roombaCommand.linear.x, m_roombaCommand.angular.z);
 
 		// Schicke die Fahrbefehle an den Roomba
 		m_commandPublisher.publish(m_roombaCommand);
