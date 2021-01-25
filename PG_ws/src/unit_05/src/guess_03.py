@@ -9,12 +9,8 @@ from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Twist
 ##from sensor_msgs.msg import LaserScan
 
-
-
 class guess_03:
     """docstring fs guess_03."""
-
-
     def __init__(self):
         rospy.init_node("guess_03", anonymous=True)
         self.bridge = CvBridge()
@@ -28,12 +24,10 @@ class guess_03:
         self.roombaCommand = Twist()
 
     def callback(self,data):
-
         #rospy.loginfo("data image \n")
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
             self.cv_image = cv_image
-
         except CvBridgeError as e:
             print(e)
             ROS_INFO(e)
@@ -59,7 +53,6 @@ class guess_03:
         res = cv2.bitwise_and(frame,frame, mask= mask)
         #midd = cv2.cvtColor(mask, cv2.COLOR_HSV2BGR)
         # Apply cv2.threshold() to get a binary image
-
         rows, cols = mask.shape
 
         """
@@ -79,23 +72,30 @@ class guess_03:
                         xmin = col
                     if col < xmax:
                         xmax = col
-
         self.col_pos = int(xmin+(xmax - xmin)/2)
         self.row_pos = int(ymin+(ymax - ymin)/2)
         """
         #a = np.arange(mask).reshape(rows, cols, )
         indices = np.where(mask > 1)
-        self.col_pos, self.row_pos = tuple(np.average(indices, 1).astype(int))
+
+        self.col_pos, self.row_pos = tuple(np.median(indices, 1).astype(int))
         #print(self.col_pos, self.row_pos)
         center =  (self.row_pos, self.col_pos)
-
-        strr = str(center) + "center"
+        #strr = str(center) + "center"
         #print(strr)
-        color2 = (250,250,250)
-        cv2.circle(res, center, 50, color2)
+        color2 = (255,255,255)
+        cv2.circle(res, center, 40, color2)
 
-        #print(rows, cols)
-        #print(self.row_pos, self.col_pos)
+        y, x = tuple(np.mean(indices, 1).astype(int))
+        center3 =  (x, y)
+        color3 = (0,0,250)
+        cv2.circle(res, center, 15, color3)
+
+        y, x = tuple(np.average(indices, 1).astype(int))
+        center4 =  (x, y)
+        color4 = (250,0,0)
+        cv2.circle(res, center4, 30, color4)
+
         cv2.imshow('frame',frame)
         cv2.imshow('mask',mask)
         cv2.imshow('res',res)
@@ -104,17 +104,17 @@ class guess_03:
             return
 
     def calculateCommand(self):
-
+        mirror = -1
         z = 0
         self.col_pos = float(self.col_pos)
         self.row_pos = float (self.row_pos)
 
         x = (480 - self.col_pos)/480
-        
+
         if self.row_pos < 320:
-            z = -(320-self.row_pos)/320
+            z = mirror*(320-self.row_pos)/320
         if self.row_pos > 320:
-            z = (self.row_pos-320)/320
+            z = -1 * mirror * (self.row_pos-320)/320
         #print(z)
         #print ( self.row_pos)
         self.roombaCommand.linear.x = 0.3  * x
@@ -129,21 +129,14 @@ class guess_03:
 
         while not rospy.is_shutdown():
             #rospy.loginfo(" mainLoop \n")
-
             self.imagecolor()
             self.calculateCommand()
             self.commandPublisher.publish(self.roombaCommand)
             rate.sleep()
 
-
-
 def main(args):
-    #flags = [i for i in dir(cv2) if i.startswith('COLOR_')]
-    #print (flags)
     A = guess_03()
     A.mainLoop()
-    #A.imagecolor()
-
 
 if __name__ == '__main__':
     main(sys.argv)
