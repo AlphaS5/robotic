@@ -9,20 +9,19 @@
 <node pkg="unit_05" type="guess_03.py" output="screen" name="guess_03">
 </node>
 
+<!-- start cv_camera node -->
+<node pkg="cv_camera" type="cv_camera_node" name="cv_camera">
+</node>
+
 <!-- start stage node -->
 	<node pkg="stage_ros" name="stageros" type="stageros" output="screen" args="$(find AIS_worlds)/prakt_01.world">
- <remap from="base_scan" to="laserscan"/>
-	</node>
-
-<!-- start cv_camera node -->
-	<node pkg="cv_camera" type="cv_camera_node" name="cv_camera">
+	<remap from="base_scan" to="laserscan"/>
 	</node>
 
 
 	<node name="rqt_image_view" pkg="rqt_image_view" type="rqt_image_view" respawn="false" output="screen">
 	<remap from="image" to="/cv_camera/image_raw" />
 	</node>
-
 
 
 

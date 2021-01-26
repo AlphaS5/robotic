@@ -37,6 +37,8 @@ class guess_03:
         if frame is None:
             return
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+        edges = cv2.Canny(frame,100,200)
         #cv2.imshow('hsv',hsv)
         # define range of blue color in HSV
         lower_red = np.array([0,120,70])
@@ -56,6 +58,11 @@ class guess_03:
         rows, cols = mask.shape
 
         """
+        import cv2
+        import numpy as np
+        input_image = cv2.imread('TP_logo.jpg', cv2.IMREAD_COLOR)
+
+        My dilation/erosion code
         ymin = 480
         ymax = 0
         xmin = 640
@@ -75,6 +82,15 @@ class guess_03:
         self.col_pos = int(xmin+(xmax - xmin)/2)
         self.row_pos = int(ymin+(ymax - ymin)/2)
         """
+        input_image = frame
+        kernel = np.ones((3,3), np.uint8) # set kernel as 3x3 matrix from numpy
+        #Create erosion and dilation image from the original image
+        erosion_image = cv2.erode(input_image, kernel, iterations=1)
+        dilation_image = cv2.dilate(input_image, kernel, iterations=1)
+        cv2.imshow('Input', input_image)
+        cv2.imshow('Erosion', erosion_image)
+        cv2.imshow('Dilation', dilation_image)
+        #cv2.waitKey(0) #wait for a key to exit
         #a = np.arange(mask).reshape(rows, cols, )
         indices = np.where(mask > 1)
 
@@ -95,8 +111,13 @@ class guess_03:
         center4 =  (x, y)
         color4 = (250,0,0)
         cv2.circle(res, center4, 30, color4)
+        edges2 = cv2.Canny(mask,100,200)
 
+        cv2.imshow('edges2',edges2)
+        cv2.imshow('edges',edges)
+        cv2.imshow('gray',gray)
         cv2.imshow('frame',frame)
+        cv2.imshow('hsv',hsv)
         cv2.imshow('mask',mask)
         cv2.imshow('res',res)
         k = cv2.waitKey(5) & 0xFF
