@@ -54,8 +54,8 @@ class guess_03:
         upper_blue = np.array([130,255,255])
 
         # Threshold the HSV image to get only blue colors
-        mask = cv2.inRange(hsv, lower_blue, upper_blue)
-        #mask = mask1 + mask2
+        #mask = cv2.inRange(hsv, lower_blue, upper_blue)
+        mask = mask1 + mask2
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(frame,frame, mask= mask)
         #midd = cv2.cvtColor(mask, cv2.COLOR_HSV2BGR)
@@ -120,18 +120,18 @@ class guess_03:
         cv2.imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst)
         cv2.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdstP)
 
-        #cv2.imshow('Input', gray)
-        #cv2.imshow('Erosion', erosion_image)
-        #cv2.imshow('Dilation', dilation_image)
+        cv2.imshow('Input', gray)
+        cv2.imshow('Erosion', erosion_image)
+        cv2.imshow('Dilation', dilation_image)
 
-        #cv2.imshow('gray',gray)
-        #cv2.imshow('edges of object',edges2)
-        #cv2.imshow('edges of image',edges)
+        cv2.imshow('gray',gray)
+        cv2.imshow('edges of object',edges2)
+        cv2.imshow('edges of image',edges)
 
-        #cv2.imshow('frame',frame)
-        #cv2.imshow('hsv',hsv)
-        #cv2.imshow('mask',mask)
-        #cv2.imshow('res',res)
+        cv2.imshow('frame',frame)
+        cv2.imshow('hsv',hsv)
+        cv2.imshow('mask',mask)
+        cv2.imshow('res',res)
 
         k = cv2.waitKey(5) & 0xFF
         if k == 27:
