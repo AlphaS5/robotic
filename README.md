@@ -14,8 +14,7 @@
 
 #unit 1 was more of what is ros
  
-#unit 2 was about trying to make it actually do usefull stuff like go to a spot and such
-# or follow a wall...
+#unit 2 was about trying to make it actually do usefull stuff like go to a spot and such or follow a wall...
 
 #unit 3 was more about localization and graphing the map we have 
 
