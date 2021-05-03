@@ -1,13 +1,13 @@
 # robotic
 # 
 #######
-# hallo there people reading my robotic group project 
+# hallo there people reading our robotic group project 
 #######
 ####### DISCLAMER ##################################################################
 # there is a lot of dirty code in here, 
-# its not clean at all this was basicly my test everthing area.
+# its not clean at all this was basicly our test everthing area.
 
-# email me or if you know me just ext me for better explanations of what is going on
+# email me or if you know me just text me for better explanations of what is going on
 ####################################################################################
 
 # so we used ROS to do a lot of things with are robots with old uni maps and also new ones 
